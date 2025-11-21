@@ -6,12 +6,17 @@ import java.util.Map;
 /**
  * Converts Java objects to SNBT (Minecraft's text NBT format).
  *
- * <p>Takes maps, lists, arrays, and primitives and turns them into SNBT strings. Handles all the
- * NBT types (byte, short, int, long, float, double, arrays, etc.) with proper formatting.
+ * <p>Converts maps, lists, arrays, and primitives to SNBT strings with proper formatting. Supports
+ * data component format with brackets and equals syntax.
  *
- * <p><strong>Bonus Feature - Data Component Format:</strong>
- * Pass {@code true} to the second parameter of {@link #convert(Object, boolean)} to use the newer
- * data component format (brackets and equals instead of braces and colons).
+ * <p><strong>Example:</strong>
+ * <pre>{@code
+ * SNBTConverter.convert(Map.of("key", 42, "name", "test"));
+ * // Returns: {key:42,name:"test"}
+ *
+ * SNBTConverter.convert(Map.of("key", 42), true);
+ * // Returns: [key=42]
+ * }</pre>
  */
 public final class SNBTConverter {
     private SNBTConverter() {
@@ -49,7 +54,7 @@ public final class SNBTConverter {
     }
 
     /**
-     * Converts a value to SNBT format based on its Java type (without translator)
+     * Converts a value to SNBT format based on its Java type
      */
     private static String convertValue(Object value) {
         if (value == null) {
@@ -242,11 +247,10 @@ public final class SNBTConverter {
         try {
             if (str.contains(".")) {
                 Double.parseDouble(str);
-                return str;
             } else {
                 Integer.parseInt(str);
-                return str;
             }
+            return str;
         } catch (NumberFormatException e) {
             return null;
         }

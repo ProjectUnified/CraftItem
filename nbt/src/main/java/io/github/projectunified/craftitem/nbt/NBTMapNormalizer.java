@@ -9,12 +9,10 @@ import java.util.function.UnaryOperator;
 /**
  * Normalizes maps and converts them to the right types for SNBT.
  *
- * <p>Takes raw map data and recursively converts it to properly typed values. Also supports custom
- * string translators for dynamic substitution.
+ * <p>Recursively converts map and list values to properly typed values. Supports custom string
+ * translators for dynamic substitution and forced-value maps using {@code $type} and {@code $value} keys.
  *
- * <p><strong>Bonus Feature - Forced-Value Maps:</strong>
- * Use {@code $type} and {@code $value} keys to force a specific type:
- *
+ * <p><strong>Example:</strong>
  * <pre>{@code
  * Map<String, Object> map = Map.of(
  *     "$type", "float",
@@ -22,9 +20,6 @@ import java.util.function.UnaryOperator;
  * );
  * Object result = NBTMapNormalizer.normalize(map);  // Returns 123.45f
  * }</pre>
- * <p>
- * Supported types: byte, short, int, long, float, double, boolean, string, raw, list, compound,
- * byte_array, int_array, long_array. Useful when Java's default type would be wrong.
  */
 public final class NBTMapNormalizer {
     private NBTMapNormalizer() {
