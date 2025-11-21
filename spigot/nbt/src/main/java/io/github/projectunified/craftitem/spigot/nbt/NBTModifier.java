@@ -6,6 +6,8 @@ import io.github.projectunified.craftitem.spigot.core.SpigotItem;
 import io.github.projectunified.craftitem.spigot.core.SpigotItemModifier;
 import org.bukkit.Bukkit;
 
+import java.util.Map;
+import java.util.Objects;
 import java.util.function.UnaryOperator;
 
 /**
@@ -53,11 +55,11 @@ public class NBTModifier implements SpigotItemModifier {
     @Override
     public void modify(SpigotItem item, UnaryOperator<String> translator) {
         String nbtString;
-        if (value instanceof String) {
-            nbtString = translator.apply((String) value);
-        } else {
+        if (value instanceof Map) {
             Object normalized = NBTMapNormalizer.normalize(value, translator);
             nbtString = SNBTConverter.convert(normalized, useDataComponent);
+        } else {
+            nbtString = translator.apply(Objects.toString(value));
         }
         if (useDataComponent) {
             String materialName = item.getItemStack().getType().getKey().toString();
