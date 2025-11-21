@@ -127,7 +127,7 @@
                         <configuration>
                             <publishingServerId>central</publishingServerId>
                             <autoPublish>true</autoPublish>
-                            <deploymentName>${project.name}</deploymentName>
+                            <deploymentName>CraftItem</deploymentName>
                         </configuration>
                     </plugin>
                 </plugins>
