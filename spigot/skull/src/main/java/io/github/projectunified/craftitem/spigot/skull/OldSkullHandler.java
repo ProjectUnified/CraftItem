@@ -15,14 +15,29 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Skull handler for older Bukkit versions (before PlayerProfile API).
+ * Skull handler for older Bukkit versions (before 1.18 with PlayerProfile API).
  * Uses Mojang's GameProfile and reflection for compatibility.
+ *
+ * <p>Caches GameProfile instances to avoid recreating them for the same texture.
+ * Uses reflection to access internal SkullMeta fields due to API limitations.
+ *
+ * <p><strong>Implementation Details:</strong>
+ * <ul>
+ *   <li>Attempts both newer setOwningPlayer() and older setOwner() methods</li>
+ *   <li>Creates GameProfiles with texture properties for custom skins</li>
+ *   <li>Uses reflection to access profile field in SkullMeta</li>
+ *   <li>Caches profiles to improve performance with repeated textures</li>
+ * </ul>
  */
 @SuppressWarnings("deprecation")
 class OldSkullHandler implements SkullHandler {
     private final Map<String, GameProfile> cache = new ConcurrentHashMap<>();
     private final Method getProfileMethod;
 
+    /**
+     * Initializes the OldSkullHandler by detecting the correct reflection method
+     * for extracting property values (differs between Bukkit versions).
+     */
     OldSkullHandler() {
         Method method = null;
         try {
@@ -39,6 +54,13 @@ class OldSkullHandler implements SkullHandler {
         getProfileMethod = method;
     }
 
+    /**
+     * Sets skull texture using an OfflinePlayer.
+     * Tries the newer setOwningPlayer() method first, falls back to older setOwner().
+     *
+     * @param meta   the SkullMeta to modify
+     * @param player the OfflinePlayer
+     */
     @Override
     public void setSkullByPlayer(SkullMeta meta, OfflinePlayer player) {
         try {
@@ -50,6 +72,13 @@ class OldSkullHandler implements SkullHandler {
         }
     }
 
+    /**
+     * Sets a GameProfile on the SkullMeta using reflection.
+     * Attempts setProfile() method first, then falls back to direct field access.
+     *
+     * @param meta    the SkullMeta to modify
+     * @param profile the GameProfile with texture data
+     */
     private void setSkullByGameProfile(SkullMeta meta, GameProfile profile) {
         try {
             Method setProfile = meta.getClass().getMethod("setProfile", GameProfile.class);
@@ -66,6 +95,13 @@ class OldSkullHandler implements SkullHandler {
         }
     }
 
+    /**
+     * Sets skull texture from a URL by creating a GameProfile with encoded texture data.
+     * Results are cached to avoid recreating profiles for the same URL.
+     *
+     * @param meta the SkullMeta to modify
+     * @param url  the texture URL
+     */
     @Override
     public void setSkullByURL(SkullMeta meta, URL url) {
         GameProfile profile = cache.computeIfAbsent(url.toString(), url1 -> {
@@ -80,6 +116,13 @@ class OldSkullHandler implements SkullHandler {
         setSkullByGameProfile(meta, profile);
     }
 
+    /**
+     * Sets skull texture from Base64-encoded texture data.
+     * Results are cached to avoid recreating profiles for the same Base64 string.
+     *
+     * @param meta   the SkullMeta to modify
+     * @param base64 the Base64-encoded texture data
+     */
     @Override
     public void setSkullByBase64(SkullMeta meta, String base64) {
         GameProfile gameProfile = cache.computeIfAbsent(base64, b -> {
@@ -90,6 +133,13 @@ class OldSkullHandler implements SkullHandler {
         setSkullByGameProfile(meta, gameProfile);
     }
 
+    /**
+     * Extracts the skull texture value (Base64 data) from SkullMeta.
+     * Uses reflection to access the profile field.
+     *
+     * @param meta the SkullMeta to query
+     * @return the Base64 texture value, or empty string if not found
+     */
     @Override
     public String getSkullValue(SkullMeta meta) {
         GameProfile profile;

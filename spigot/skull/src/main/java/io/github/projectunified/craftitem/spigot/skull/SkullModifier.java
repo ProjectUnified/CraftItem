@@ -35,6 +35,11 @@ public class SkullModifier implements SpigotItemModifier {
 
     private final String skullString;
 
+    /**
+     * Creates a skull modifier.
+     *
+     * @param skullString the skull string
+     */
     public SkullModifier(String skullString) {
         this.skullString = skullString;
     }
