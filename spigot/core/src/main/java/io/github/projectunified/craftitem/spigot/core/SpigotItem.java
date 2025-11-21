@@ -5,21 +5,38 @@ import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import java.util.UUID;
 import java.util.function.Consumer;
 
 public class SpigotItem implements Item {
+    private final UUID owner;
     private ItemStack itemStack;
 
-    public SpigotItem(ItemStack itemStack) {
+    public SpigotItem(ItemStack itemStack, UUID owner) {
+        this.owner = owner;
         this.itemStack = itemStack.clone();
     }
 
-    public SpigotItem(Material material) {
+    public SpigotItem(ItemStack itemStack) {
+        this(itemStack, null);
+    }
+
+    public SpigotItem(Material material, UUID owner) {
+        this.owner = owner;
         this.itemStack = new ItemStack(material);
     }
 
-    public SpigotItem() {
+    public SpigotItem(Material material) {
+        this(material, null);
+    }
+
+    public SpigotItem(UUID owner) {
+        this.owner = owner;
         this.itemStack = new ItemStack(Material.STONE);
+    }
+
+    public SpigotItem() {
+        this((UUID) null);
     }
 
     public ItemStack getItemStack() {
@@ -57,5 +74,10 @@ public class SpigotItem implements Item {
     @Override
     public void setAmount(int amount) {
         this.itemStack.setAmount(amount);
+    }
+
+    @Override
+    public UUID getOwner() {
+        return owner;
     }
 }
