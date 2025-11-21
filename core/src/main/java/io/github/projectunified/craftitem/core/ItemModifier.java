@@ -27,4 +27,13 @@ public interface ItemModifier {
      * @param translator a function to translate string values (e.g., for variable substitution)
      */
     void modify(Item item, UnaryOperator<String> translator);
+
+    /**
+     * Applies modifications to the given item.
+     *
+     * @param item the item to modify
+     */
+    default void modify(Item item) {
+        modify(item, UnaryOperator.identity());
+    }
 }
