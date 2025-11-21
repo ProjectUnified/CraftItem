@@ -52,8 +52,13 @@ public class NBTModifier implements SpigotItemModifier {
      */
     @Override
     public void modify(SpigotItem item, UnaryOperator<String> translator) {
-        Object normalized = NBTMapNormalizer.normalize(value, translator);
-        String nbtString = SNBTConverter.convert(normalized, useDataComponent);
+        String nbtString;
+        if (value instanceof String) {
+            nbtString = translator.apply((String) value);
+        } else {
+            Object normalized = NBTMapNormalizer.normalize(value, translator);
+            nbtString = SNBTConverter.convert(normalized, useDataComponent);
+        }
         if (useDataComponent) {
             String materialName = item.getItemStack().getType().getKey().toString();
             applyNBT(item, materialName + nbtString, true);
