@@ -8,6 +8,7 @@ import org.bukkit.inventory.meta.EnchantmentStorageMeta;
 import java.util.*;
 import java.util.function.Function;
 import java.util.function.UnaryOperator;
+import java.util.regex.Pattern;
 
 /**
  * Spigot modifier that applies enchantments to items.
@@ -44,13 +45,23 @@ public class EnchantmentModifier implements SpigotItemModifier {
     private final Function<UnaryOperator<String>, Map<Enchantment, Integer>> enchantments;
 
     /**
+     * Creates an EnchantmentModifier from a list of enchantment strings
+     *
+     * @param enchantments the list of enchantment strings
+     * @param delimiters   the character to separate the enchantment name and level
+     */
+    public EnchantmentModifier(List<String> enchantments, char... delimiters) {
+        this.enchantments = translator -> getParsed(enchantments, delimiters, translator);
+    }
+
+    /**
      * Creates an EnchantmentModifier from a list of enchantment strings.
      * Format: "ENCHANTMENT_NAME level" or "ENCHANTMENT_NAME,level"
      *
      * @param enchantments the list of enchantment strings
      */
     public EnchantmentModifier(List<String> enchantments) {
-        this.enchantments = translator -> getParsed(enchantments, translator);
+        this(enchantments, ',', ' ');
     }
 
     /**
@@ -74,21 +85,25 @@ public class EnchantmentModifier implements SpigotItemModifier {
 
     /**
      * Parses enchantment strings into a map of Enchantment objects.
-     * Supports both space and comma delimiters between name and level.
      *
      * @param enchantments the list of enchantment strings
+     * @param delimiters   the character to separate the enchantment name and level
      * @param translator   the string translator for variable substitution
      * @return map of valid enchantments to their levels
      */
-    private static Map<Enchantment, Integer> getParsed(List<String> enchantments, UnaryOperator<String> translator) {
+    private static Map<Enchantment, Integer> getParsed(List<String> enchantments, char[] delimiters, UnaryOperator<String> translator) {
         Map<Enchantment, Integer> enchantmentMap = new LinkedHashMap<>();
         for (String string : enchantments) {
             String replaced = translator.apply(string);
-            String[] split;
-            if (replaced.indexOf(',') != -1) {
-                split = replaced.split(",", 2);
-            } else {
-                split = replaced.split(" ", 2);
+            String[] split = null;
+            for (char delimiter : delimiters) {
+                if (replaced.indexOf(delimiter) >= 0) {
+                    split = replaced.split(Pattern.quote(String.valueOf(delimiter)), 2);
+                    break;
+                }
+            }
+            if (split == null) {
+                split = new String[]{replaced};
             }
             Optional<Enchantment> enchantment = Optional.of(split[0].trim()).map(EnchantmentModifier::normalizeEnchantmentName).map(ENCHANTMENT_MAP::get);
             int level = 1;
