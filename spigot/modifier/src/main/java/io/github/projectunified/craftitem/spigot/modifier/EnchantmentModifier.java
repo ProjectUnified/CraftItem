@@ -8,7 +8,6 @@ import org.bukkit.inventory.meta.EnchantmentStorageMeta;
 import java.util.*;
 import java.util.function.Function;
 import java.util.function.UnaryOperator;
-import java.util.regex.Pattern;
 
 /**
  * Spigot modifier that applies enchantments to items.
@@ -95,22 +94,30 @@ public class EnchantmentModifier implements SpigotItemModifier {
         Map<Enchantment, Integer> enchantmentMap = new LinkedHashMap<>();
         for (String string : enchantments) {
             String replaced = translator.apply(string);
-            String[] split = null;
+            if (replaced == null || replaced.isEmpty()) {
+                continue;
+            }
+            String enchantmentName = null;
+            String enchantmentLevel = null;
             for (char delimiter : delimiters) {
-                if (replaced.indexOf(delimiter) >= 0) {
-                    split = replaced.split(Pattern.quote(String.valueOf(delimiter)), 2);
+                int delimiterIndex = replaced.indexOf(delimiter);
+                if (delimiterIndex >= 0) {
+                    enchantmentName = replaced.substring(0, delimiterIndex).trim();
+                    enchantmentLevel = replaced.substring(delimiterIndex + 1).trim();
+                    if (enchantmentLevel.isEmpty()) {
+                        enchantmentLevel = null;
+                    }
                     break;
                 }
             }
-            if (split == null) {
-                split = new String[]{replaced};
+            if (enchantmentName == null) {
+                enchantmentName = replaced.trim();
             }
-            Optional<Enchantment> enchantment = Optional.of(split[0].trim()).map(EnchantmentModifier::normalizeEnchantmentName).map(ENCHANTMENT_MAP::get);
+            Optional<Enchantment> enchantment = Optional.of(enchantmentName).map(EnchantmentModifier::normalizeEnchantmentName).map(ENCHANTMENT_MAP::get);
             int level = 1;
-            if (split.length > 1) {
-                String rawLevel = split[1].trim();
+            if (enchantmentLevel != null) {
                 try {
-                    level = Integer.parseInt(rawLevel);
+                    level = Integer.parseInt(enchantmentLevel);
                 } catch (NumberFormatException e) {
                     continue;
                 }
