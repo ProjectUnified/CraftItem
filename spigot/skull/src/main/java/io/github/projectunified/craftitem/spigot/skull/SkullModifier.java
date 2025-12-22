@@ -46,10 +46,15 @@ public class SkullModifier implements SpigotItemModifier {
 
     private static SkullHandler getSkullHandler() {
         try {
-            Class.forName("org.bukkit.profile.PlayerProfile");
-            return new NewSkullHandler();
-        } catch (ClassNotFoundException e) {
-            return new OldSkullHandler();
+            Class.forName("com.destroystokyo.paper.profile.PlayerProfile");
+            return new PaperSkullHandler();
+        } catch (Exception e1) {
+            try {
+                Class.forName("org.bukkit.profile.PlayerProfile");
+                return new NewSkullHandler();
+            } catch (Exception e2) {
+                return new OldSkullHandler();
+            }
         }
     }
 

@@ -30,6 +30,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * </ul>
  */
 class NewSkullHandler implements SkullHandler {
+    private final Gson gson = new Gson();
     private final Map<String, PlayerProfile> profileMap = new ConcurrentHashMap<>();
 
     /**
@@ -78,7 +79,7 @@ class NewSkullHandler implements SkullHandler {
     public void setSkullByBase64(SkullMeta meta, String base64) {
         try {
             String decoded = new String(Base64.getDecoder().decode(base64), StandardCharsets.UTF_8);
-            JsonObject json = new Gson().fromJson(decoded, JsonObject.class);
+            JsonObject json = gson.fromJson(decoded, JsonObject.class);
             String url = json.getAsJsonObject("textures").getAsJsonObject("SKIN").get("url").getAsString();
             setSkullByURL(meta, url);
         } catch (Exception e) {
