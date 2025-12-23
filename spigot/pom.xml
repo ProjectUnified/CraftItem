@@ -16,6 +16,7 @@
         <module>modifier</module>
         <module>nbt</module>
         <module>skull</module>
+        <module>skull-handler</module>
     </modules>
 
     <name>CraftItem Spigot</name>

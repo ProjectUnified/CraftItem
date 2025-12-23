@@ -1,4 +1,4 @@
-package io.github.projectunified.craftitem.spigot.skull;
+package io.github.projectunified.craftitem.spigot.skull.handler;
 
 import com.destroystokyo.paper.profile.PlayerProfile;
 import com.destroystokyo.paper.profile.ProfileProperty;
@@ -25,7 +25,7 @@ import java.util.concurrent.ConcurrentHashMap;
  *   <li>Caches profiles for performance optimization</li>
  * </ul>
  */
-public class PaperSkullHandler implements SkullHandler {
+class PaperSkullHandler implements SkullHandler {
     private final Map<String, PlayerProfile> profileMap = new ConcurrentHashMap<>();
 
     /**

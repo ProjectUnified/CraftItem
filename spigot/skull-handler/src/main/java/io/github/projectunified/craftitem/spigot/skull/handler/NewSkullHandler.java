@@ -1,4 +1,4 @@
-package io.github.projectunified.craftitem.spigot.skull;
+package io.github.projectunified.craftitem.spigot.skull.handler;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;

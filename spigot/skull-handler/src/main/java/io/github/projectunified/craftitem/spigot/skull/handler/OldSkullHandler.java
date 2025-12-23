@@ -1,4 +1,4 @@
-package io.github.projectunified.craftitem.spigot.skull;
+package io.github.projectunified.craftitem.spigot.skull.handler;
 
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
@@ -66,7 +66,7 @@ class OldSkullHandler implements SkullHandler {
         try {
             // Try newer API first
             meta.setOwningPlayer(player);
-        } catch (Exception e) {
+        } catch (Throwable e) {
             // Fallback to old API
             meta.setOwner(player.getName());
         }
