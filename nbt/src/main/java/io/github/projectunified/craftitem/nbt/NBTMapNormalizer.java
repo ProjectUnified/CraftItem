@@ -273,10 +273,7 @@ public final class NBTMapNormalizer {
 
     private static Object normalizeToRaw(Object value, UnaryOperator<String> translator) {
         String rawValue = translator.apply(value.toString());
-        Map<String, Object> rawMap = new HashMap<>();
-        rawMap.put("$raw", true);
-        rawMap.put("$value", rawValue);
-        return rawMap;
+        return new NBTRaw(rawValue);
     }
 
     private static List<?> normalizeToList(Object value, UnaryOperator<String> translator) {

@@ -61,14 +61,15 @@ public final class SNBTConverter {
             return "\"\"";
         }
 
+        // Check for raw NBT data
+        if (value instanceof NBTRaw) {
+            return ((NBTRaw) value).value;
+        }
+
         // Check for map
         if (value instanceof Map) {
             @SuppressWarnings("unchecked")
             Map<String, Object> map = (Map<String, Object>) value;
-            // Check if this is a raw string map
-            if (isRawStringMap(map)) {
-                return map.get("$value").toString();
-            }
             return convertToCompound(map, false);
         }
 
@@ -309,17 +310,6 @@ public final class SNBTConverter {
             if (!Character.isLetterOrDigit(c) && c != '_' && c != '-' && c != '.' && c != '+') {
                 return true;
             }
-        }
-        return false;
-    }
-
-    /**
-     * Checks if a map represents a raw string (has $raw flag set to true)
-     */
-    private static boolean isRawStringMap(Map<String, Object> map) {
-        Object rawFlag = map.get("$raw");
-        if (rawFlag instanceof Boolean) {
-            return (Boolean) rawFlag;
         }
         return false;
     }
