@@ -46,39 +46,30 @@ public final class NBTMapNormalizer {
      * @throws IllegalArgumentException if forced-value map is invalid
      */
     public static Object normalize(Object value, UnaryOperator<String> translator) {
-        if (value == null) {
-            return null;
+        if (value instanceof List) {
+            return normalizeList((List<?>) value, translator);
         }
 
-        if (!(value instanceof Map)) {
-            return value;
-        }
+        if (value instanceof Map) {
+            @SuppressWarnings("unchecked")
+            Map<String, Object> map = (Map<String, Object>) value;
 
-        @SuppressWarnings("unchecked")
-        Map<String, Object> map = (Map<String, Object>) value;
-
-        // Check if this is a forced-value map
-        if (map.containsKey("$type")) {
-            if (!map.containsKey("$value")) {
-                throw new IllegalArgumentException(
-                        "Map with '$type' entry must also have '$value' entry");
+            // Check if this is a forced-value map
+            if (map.containsKey("$type")) {
+                if (!map.containsKey("$value")) {
+                    throw new IllegalArgumentException("Map with '$type' entry must also have '$value' entry");
+                }
+                return normalizeForcedValue(map.get("$type"), map.get("$value"), translator);
             }
-            return normalizeForcedValue(map.get("$type"), map.get("$value"), translator);
+
+            Map<String, Object> result = new HashMap<>();
+            for (Map.Entry<String, Object> entry : map.entrySet()) {
+                result.put(entry.getKey(), normalize(entry.getValue(), translator));
+            }
+            return result;
         }
 
-        // Recursively normalize map values
-        Map<String, Object> result = new HashMap<>(map);
-        for (Map.Entry<String, Object> entry : result.entrySet()) {
-            Object entryValue = entry.getValue();
-            if (entryValue instanceof Map) {
-                @SuppressWarnings("unchecked")
-                Map<String, Object> nested = (Map<String, Object>) entryValue;
-                result.put(entry.getKey(), normalize(nested, translator));
-            } else if (entryValue instanceof List) {
-                result.put(entry.getKey(), normalizeList((List<?>) entryValue, translator));
-            }
-        }
-        return result;
+        return value;
     }
 
     /**
@@ -133,16 +124,9 @@ public final class NBTMapNormalizer {
      * Normalizes a list by recursively normalizing its elements
      */
     private static List<?> normalizeList(List<?> list, UnaryOperator<String> translator) {
-        List<Object> result = new ArrayList<>(list);
-        for (int i = 0; i < result.size(); i++) {
-            Object item = result.get(i);
-            if (item instanceof Map) {
-                @SuppressWarnings("unchecked")
-                Map<String, Object> nested = (Map<String, Object>) item;
-                result.set(i, normalize(nested, translator));
-            } else if (item instanceof List) {
-                result.set(i, normalizeList((List<?>) item, translator));
-            }
+        List<Object> result = new ArrayList<>();
+        for (Object value : list) {
+            result.add(normalize(value, translator));
         }
         return result;
     }
