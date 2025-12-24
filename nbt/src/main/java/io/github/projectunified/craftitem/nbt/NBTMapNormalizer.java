@@ -156,9 +156,6 @@ public final class NBTMapNormalizer {
             String str = (String) value;
             str = str.trim();
             str = translator.apply(str);
-            if (str.endsWith("b") || str.endsWith("B")) {
-                str = str.substring(0, str.length() - 1);
-            }
             return Byte.parseByte(str);
         }
         throw new IllegalArgumentException("Cannot convert " + value + " to byte");
@@ -195,9 +192,6 @@ public final class NBTMapNormalizer {
             String str = (String) value;
             str = str.trim();
             str = translator.apply(str);
-            if (str.endsWith("s") || str.endsWith("S")) {
-                str = str.substring(0, str.length() - 1);
-            }
             return Short.parseShort(str);
         }
         throw new IllegalArgumentException("Cannot convert " + value + " to short");
@@ -211,9 +205,6 @@ public final class NBTMapNormalizer {
             String str = (String) value;
             str = str.trim();
             str = translator.apply(str);
-            if (str.endsWith("i") || str.endsWith("I")) {
-                str = str.substring(0, str.length() - 1);
-            }
             return Integer.parseInt(str);
         }
         throw new IllegalArgumentException("Cannot convert " + value + " to int");
@@ -227,9 +218,6 @@ public final class NBTMapNormalizer {
             String str = (String) value;
             str = str.trim();
             str = translator.apply(str);
-            if (str.endsWith("l") || str.endsWith("L")) {
-                str = str.substring(0, str.length() - 1);
-            }
             return Long.parseLong(str);
         }
         throw new IllegalArgumentException("Cannot convert " + value + " to long");
@@ -243,9 +231,6 @@ public final class NBTMapNormalizer {
             String str = (String) value;
             str = str.trim();
             str = translator.apply(str);
-            if (str.endsWith("f") || str.endsWith("F")) {
-                str = str.substring(0, str.length() - 1);
-            }
             return Float.parseFloat(str);
         }
         throw new IllegalArgumentException("Cannot convert " + value + " to float");
@@ -259,9 +244,6 @@ public final class NBTMapNormalizer {
             String str = (String) value;
             str = str.trim();
             str = translator.apply(str);
-            if (str.endsWith("d") || str.endsWith("D")) {
-                str = str.substring(0, str.length() - 1);
-            }
             return Double.parseDouble(str);
         }
         throw new IllegalArgumentException("Cannot convert " + value + " to double");
