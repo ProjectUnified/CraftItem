@@ -107,6 +107,9 @@ public final class NBTMapNormalizer {
                 case 'd':
                 case 'D':
                     return Double.parseDouble(numPart);
+                case 'i':
+                case 'I':
+                    return Integer.parseInt(numPart);
             }
         } catch (NumberFormatException e) {
             // Not a valid number with this suffix
