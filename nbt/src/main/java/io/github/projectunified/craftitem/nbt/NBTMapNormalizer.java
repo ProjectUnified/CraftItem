@@ -69,7 +69,50 @@ public final class NBTMapNormalizer {
             return result;
         }
 
+        if (value instanceof String) {
+            Number number = tryParseNumberWithSuffix(((String) value).trim());
+            if (number != null) {
+                return number;
+            }
+        }
+
         return value;
+    }
+
+    /**
+     * Attempts to parse a string as a number with a type suffix
+     */
+    private static Number tryParseNumberWithSuffix(String str) {
+        if (str.length() < 2) {
+            return null;
+        }
+
+        char lastChar = str.charAt(str.length() - 1);
+        String numPart = str.substring(0, str.length() - 1);
+
+        try {
+            switch (lastChar) {
+                case 'b':
+                case 'B':
+                    return Byte.parseByte(numPart);
+                case 's':
+                case 'S':
+                    return Short.parseShort(numPart);
+                case 'l':
+                case 'L':
+                    return Long.parseLong(numPart);
+                case 'f':
+                case 'F':
+                    return Float.parseFloat(numPart);
+                case 'd':
+                case 'D':
+                    return Double.parseDouble(numPart);
+            }
+        } catch (NumberFormatException e) {
+            // Not a valid number with this suffix
+        }
+
+        return null;
     }
 
     /**

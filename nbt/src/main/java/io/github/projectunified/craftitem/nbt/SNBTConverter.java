@@ -184,12 +184,6 @@ public final class SNBTConverter {
     private static String convertStringValue(String str) {
         str = str.trim();
 
-        // Try parsing as number with suffix (byte, short, long, float, double)
-        String numberWithSuffix = tryParseNumberWithSuffix(str);
-        if (numberWithSuffix != null) {
-            return numberWithSuffix;
-        }
-
         // Try parsing as plain number (int or double)
         String plainNumber = tryParseNumber(str);
         if (plainNumber != null) {
@@ -198,47 +192,6 @@ public final class SNBTConverter {
 
         // Not a number, treat as string
         return escapeString(str);
-    }
-
-    /**
-     * Attempts to parse a string as a number with a type suffix
-     */
-    private static String tryParseNumberWithSuffix(String str) {
-        if (str.length() < 2) {
-            return null;
-        }
-
-        char lastChar = str.charAt(str.length() - 1);
-        String numPart = str.substring(0, str.length() - 1);
-
-        try {
-            switch (lastChar) {
-                case 'b':
-                case 'B':
-                    Byte.parseByte(numPart);
-                    return str.toLowerCase().replace('B', 'b');
-                case 's':
-                case 'S':
-                    Short.parseShort(numPart);
-                    return str.toLowerCase().replace('S', 's');
-                case 'l':
-                case 'L':
-                    Long.parseLong(numPart);
-                    return str.toUpperCase().replace('l', 'L');
-                case 'f':
-                case 'F':
-                    Float.parseFloat(numPart);
-                    return str.toLowerCase().replace('F', 'f');
-                case 'd':
-                case 'D':
-                    Double.parseDouble(numPart);
-                    return numPart;
-            }
-        } catch (NumberFormatException e) {
-            // Not a valid number with this suffix
-        }
-
-        return null;
     }
 
     /**
