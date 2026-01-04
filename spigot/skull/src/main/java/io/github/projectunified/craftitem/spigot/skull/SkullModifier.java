@@ -31,6 +31,8 @@ public class SkullModifier implements SpigotItemModifier {
 
     @Override
     public void modify(SpigotItem item, UnaryOperator<String> translator) {
-        item.editMeta(SkullMeta.class, skullMeta -> skullHandler.setSkull(skullMeta, translator.apply(skullString)));
+        String translated = translator.apply(skullString);
+        if (translated.isEmpty()) return;
+        item.editMeta(SkullMeta.class, skullMeta -> skullHandler.setSkull(skullMeta, translated));
     }
 }
