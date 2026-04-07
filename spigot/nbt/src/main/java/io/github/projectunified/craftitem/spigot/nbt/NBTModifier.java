@@ -5,6 +5,7 @@ import io.github.projectunified.craftitem.nbt.SNBTConverter;
 import io.github.projectunified.craftitem.spigot.core.SpigotItem;
 import io.github.projectunified.craftitem.spigot.core.SpigotItemModifier;
 import org.bukkit.Bukkit;
+import org.bukkit.inventory.ItemStack;
 
 import java.util.Map;
 import java.util.Objects;
@@ -81,7 +82,16 @@ public class NBTModifier implements SpigotItemModifier {
     private void applyNBT(SpigotItem item, String nbtString, boolean useDataComponent) {
         try {
             if (useDataComponent) {
-                item.setItemStack(Bukkit.getItemFactory().createItemStack(nbtString));
+                ItemStack nbtItemStack = Bukkit.getItemFactory().createItemStack(nbtString);
+                try {
+                    if (PaperNBTApplier.SUPPORTED) {
+                        item.edit(itemStack -> PaperNBTApplier.mergeComponent(itemStack, nbtItemStack));
+                        return;
+                    }
+                } catch (Throwable ignored) {
+                    // The API for Data Component is experimental. Silently ignores error if it's no longer supported in new versions.
+                }
+                item.setItemStack(nbtItemStack);
             } else {
                 item.setItemStack(Bukkit.getUnsafe().modifyItemStack(item.getItemStack(), nbtString));
             }
