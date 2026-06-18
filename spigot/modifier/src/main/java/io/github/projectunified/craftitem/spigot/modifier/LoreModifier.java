@@ -6,6 +6,7 @@ import io.github.projectunified.craftitem.spigot.core.SpigotItemModifier;
 import java.util.List;
 import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Spigot modifier that sets item lore (description lines).
@@ -29,6 +30,7 @@ import java.util.stream.Collectors;
  */
 public class LoreModifier implements SpigotItemModifier {
     private final List<String> lore;
+    private UnaryOperator<String> transformer;
 
     /**
      * Creates a new LoreModifier with the specified lore lines.
@@ -48,7 +50,20 @@ public class LoreModifier implements SpigotItemModifier {
      */
     @Override
     public void modify(SpigotItem item, UnaryOperator<String> translator) {
-        List<String> lore = this.lore.stream().map(translator).collect(Collectors.toList());
+        Stream<String> loreStream = this.lore.stream().map(translator);
+        if (transformer != null) {
+            loreStream = loreStream.map(transformer);
+        }
+        List<String> lore = loreStream.collect(Collectors.toList());
         item.editMeta(itemMeta -> itemMeta.setLore(lore));
+    }
+
+    /**
+     * Set the function to transform each line of the lore
+     *
+     * @param transformer the transformer
+     */
+    public void setTransformer(UnaryOperator<String> transformer) {
+        this.transformer = transformer;
     }
 }

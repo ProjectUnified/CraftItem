@@ -20,6 +20,7 @@ import java.util.function.UnaryOperator;
  */
 public class NameModifier implements ItemModifier {
     private final String name;
+    private UnaryOperator<String> transformer;
 
     /**
      * Creates a new NameModifier with the specified name.
@@ -39,6 +40,18 @@ public class NameModifier implements ItemModifier {
     @Override
     public void modify(Item item, UnaryOperator<String> translator) {
         String name = translator.apply(this.name);
+        if (transformer != null) {
+            name = transformer.apply(name);
+        }
         item.setName(name);
+    }
+
+    /**
+     * Set the function to transform the name
+     *
+     * @param transformer the transformer
+     */
+    public void setTransformer(UnaryOperator<String> transformer) {
+        this.transformer = transformer;
     }
 }
