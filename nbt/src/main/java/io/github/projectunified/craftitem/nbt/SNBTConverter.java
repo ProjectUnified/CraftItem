@@ -182,10 +182,8 @@ public final class SNBTConverter {
      * Converts a string value, checking for numeric literals with suffixes
      */
     private static String convertStringValue(String str) {
-        str = str.trim();
-
         // Try parsing as plain number (int or double)
-        String plainNumber = tryParseNumber(str);
+        String plainNumber = tryParseNumber(str.trim());
         if (plainNumber != null) {
             return plainNumber;
         }
