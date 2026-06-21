@@ -84,7 +84,7 @@ public class NBTModifier implements SpigotItemModifier {
             if (useDataComponent) {
                 ItemStack nbtItemStack = Bukkit.getItemFactory().createItemStack(nbtString);
                 try {
-                    if (PaperNBTApplier.SUPPORTED) {
+                    if (PaperNBTApplier.SUPPORTED && PaperNBTApplier.hasAllSupportedComponentTypes(nbtItemStack)) {
                         item.edit(itemStack -> PaperNBTApplier.mergeComponent(itemStack, nbtItemStack));
                         return;
                     }

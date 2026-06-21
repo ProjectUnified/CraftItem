@@ -15,6 +15,7 @@ class PaperNBTApplier {
             Class.forName("io.papermc.paper.datacomponent.DataComponentType");
             Class.forName("io.papermc.paper.datacomponent.DataComponentType$Valued");
             Class.forName("io.papermc.paper.datacomponent.DataComponentType$NonValued");
+            Class.forName("io.papermc.paper.datacomponent.PaperDataComponentType$Unimplemented");
 
             Class<?> dataComponentHolderClass = Class.forName("io.papermc.paper.datacomponent.DataComponentHolder");
             supported = dataComponentHolderClass.isAssignableFrom(ItemStack.class);
@@ -22,6 +23,16 @@ class PaperNBTApplier {
             supported = false;
         }
         SUPPORTED = supported;
+    }
+
+    @SuppressWarnings("UnstableApiUsage")
+    static boolean hasAllSupportedComponentTypes(ItemStack referenceItem) {
+        for (DataComponentType type : referenceItem.getDataTypes()) {
+            if (!(type instanceof DataComponentType.Valued) && !(type instanceof DataComponentType.NonValued)) {
+                return false;
+            }
+        }
+        return true;
     }
 
     @SuppressWarnings({"UnstableApiUsage", "unchecked"})
